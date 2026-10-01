@@ -38,10 +38,6 @@ export default async function handler(request, response) {
     }
 
     if (request.method !== 'POST') return response.status(405).json({ error: 'Method not allowed' })
-    if (!process.env.ADMIN_SECRET || request.headers['x-admin-secret'] !== process.env.ADMIN_SECRET) {
-      return response.status(401).json({ error: 'رمز لوحة التحكم غير صحيح' })
-    }
-
     const body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
     const allowedKinds = ['project', 'system-video', 'content-video']
     if (!body?.kind || !allowedKinds.includes(body.kind) || !body.title?.trim()) {

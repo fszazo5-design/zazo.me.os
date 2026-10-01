@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, MessageCircle, Monitor, Phone, Smartphone, Sparkles, Video } from 'lucide-react'
+import { CONTENT_API_URL } from '../lib/content'
 
 const MESSENGER_URL = 'https://m.me/ahmd.alrwby.117154'
 const WHATSAPP_URL = 'https://wa.me/201091288031'
@@ -8,7 +9,7 @@ const WHATSAPP_URL = 'https://wa.me/201091288031'
 export default function Hero() {
   const [stats, setStats] = useState([])
   useEffect(() => {
-    fetch('/api/content?kind=stat').then((response) => response.ok ? response.json() : []).then(setStats).catch(() => setStats([]))
+    fetch(`${CONTENT_API_URL}?kind=stat`).then((response) => response.ok ? response.json() : []).then(setStats).catch(() => setStats([]))
   }, [])
 
   return <section className="overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white pb-16 dark:from-primary-950/30 dark:via-gray-950 dark:to-gray-950">
