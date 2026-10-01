@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard'
 
 function App() {
   return <ThemeProvider><BrowserRouter><Routes>
+    <Route path="/admin" element={<AdminDashboard />} />
     <Route path="/control-panel" element={<AdminDashboard />} />
     <Route element={<Layout />}>
       <Route path="/" element={<Home />} />
