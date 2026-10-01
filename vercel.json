@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/control-panel", "destination": "/index.html" },
+    { "source": "/showcase", "destination": "/index.html" },
+    { "source": "/system-videos", "destination": "/index.html" },
+    { "source": "/content-videos", "destination": "/index.html" }
+  ]
+}
