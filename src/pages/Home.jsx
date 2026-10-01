@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Film, Layers, Loader2, Video } from 'lucide-react'
@@ -41,7 +42,6 @@ export default function Home() {
   )
 }
 
-// eslint-disable-next-line react/prop-types
 function ContentSection({ title, subtitle, items, empty, link, type, muted }) {
   return (
     <section className={`mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 ${muted ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
