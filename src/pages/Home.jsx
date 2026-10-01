@@ -23,7 +23,7 @@ export default function Home() {
       <Hero />
       {loading ? <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary-500" /></div> : (
         <>
-          <ContentSection title="مشاريع مختارة" subtitle="المحتوى المنشور من ملفات المستودع" items={projects.slice(0, 3)} empty="لا توجد مشاريع منشورة بعد." link="/showcase" type="project" />
+          <ContentSection title="مشاريع مختارة" subtitle="المحتوى المنشور من Neon" items={projects.slice(0, 3)} empty="لا توجد مشاريع منشورة بعد." link="/showcase" type="project" />
           <ContentSection title="شرح الأنظمة" subtitle="فيديوهات الشرح المنشورة" items={systemVideos.slice(0, 3)} empty="لا توجد فيديوهات أنظمة منشورة بعد." link="/system-videos" type="video" muted />
           <ContentSection title="صناعة المحتوى" subtitle="المحتوى التقني المنشور" items={contentVideos.slice(0, 4)} empty="لا توجد فيديوهات محتوى منشورة بعد." link="/content-videos" type="content" />
         </>

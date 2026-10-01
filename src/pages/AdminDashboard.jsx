@@ -1,60 +1,25 @@
 import { useState } from 'react'
-import { CheckCircle2, FileJson, GitBranch, Info, Loader2, UploadCloud } from 'lucide-react'
-import { githubRepository, uploadJsonFile } from '../lib/github'
+import { CheckCircle2, Database, Info, Loader2, Plus, ShieldCheck } from 'lucide-react'
 
-const files = [
-  { key: 'projects', label: 'المشاريع', filename: 'projects.json' },
-  { key: 'system-videos', label: 'فيديوهات الأنظمة', filename: 'system-videos.json' },
-  { key: 'content-videos', label: 'فيديوهات المحتوى', filename: 'content-videos.json' },
-  { key: 'stats', label: 'الإحصائيات', filename: 'stats.json' },
-]
+const emptyForm = { kind: 'project', title: '', description: '', category: 'android', imageUrl: '', contentUrl: '', technologies: '', topic: '', views: '', duration: '' }
 
 export default function AdminDashboard() {
-  const [selected, setSelected] = useState(files[0])
-  const [value, setValue] = useState('[]')
-  const [token, setToken] = useState('')
+  const [form, setForm] = useState(emptyForm)
+  const [secret, setSecret] = useState('')
   const [status, setStatus] = useState(null)
   const [saving, setSaving] = useState(false)
-
-  const uploadToGithub = async () => {
-    setStatus(null)
-    let parsed
-    try {
-      parsed = JSON.parse(value)
-    } catch {
-      setStatus({ type: 'error', message: 'صيغة JSON غير صحيحة. راجع الأقواس والفواصل.' })
-      return
-    }
-    if (!Array.isArray(parsed)) {
-      setStatus({ type: 'error', message: 'يجب أن يكون محتوى الملف مصفوفة JSON تبدأ بـ [ وتنتهي بـ ].' })
-      return
-    }
-
+  const update = (key, value) => setForm((current) => ({ ...current, [key]: value }))
+  const submit = async (event) => {
+    event.preventDefault(); setStatus(null)
+    if (!form.title.trim()) return setStatus({ type: 'error', message: 'اكتب عنوان المحتوى أولاً.' })
     setSaving(true)
     try {
-      const result = await uploadJsonFile({ filename: selected.filename, content: parsed, token })
-      setStatus({ type: 'success', message: `تم رفع ${selected.filename} إلى GitHub بنجاح. رقم التعديل: ${result.commit?.sha?.slice(0, 7) || 'تم الحفظ'}` })
-      setToken('')
-    } catch (error) {
-      setStatus({ type: 'error', message: error.message })
-    } finally {
-      setSaving(false)
-    }
+      const response = await fetch('/api/content', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }, body: JSON.stringify({ ...form, technologies: form.technologies.split(',').map((item) => item.trim()).filter(Boolean) }) })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'تعذر حفظ المحتوى')
+      setForm(emptyForm); setStatus({ type: 'success', message: 'تم حفظ الروابط في Neon وستظهر في القسم المناسب بعد تحديث الموقع.' })
+    } catch (error) { setStatus({ type: 'error', message: error.message }) } finally { setSaving(false) }
   }
-
-  return <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-    <div className="mb-8"><h1 className="text-3xl font-bold text-gray-900 dark:text-white">إدارة ملفات المحتوى</h1><p className="mt-2 text-gray-600 dark:text-gray-400">أي حفظ من هنا يحدّث ملف JSON المناسب داخل مستودع GitHub، ثم يقرأ الموقع البيانات الجديدة تلقائيًا.</p></div>
-    <div className="mb-6 flex items-start gap-3 rounded-xl bg-primary-50 p-4 text-sm text-primary-800 dark:bg-primary-950/40 dark:text-primary-200"><Info className="mt-0.5 h-5 w-5 shrink-0" /><span>المستودع المستهدف: <strong dir="ltr">{githubRepository}</strong>. استخدم Fine-grained Token بصلاحية <strong>Contents: Read and write</strong> لهذا المستودع فقط. لا يتم حفظ الرمز في localStorage أو ملفات المشروع، ويُمسح بعد الرفع.</span></div>
-    <div className="card p-5">
-      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">الملف المستهدف</label>
-      <select value={selected.key} onChange={(e) => { setSelected(files.find((file) => file.key === e.target.value)); setStatus(null) }} className="input-field mb-5">{files.map((file) => <option key={file.key} value={file.key}>{file.label} — public/data/{file.filename}</option>)}</select>
-      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">محتوى JSON</label>
-      <textarea value={value} onChange={(e) => setValue(e.target.value)} rows={16} dir="ltr" className="input-field resize-y font-mono text-sm" placeholder={'[{"id":"..."}]'} />
-      <label className="mt-5 mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub Fine-grained Token</label>
-      <input type="password" value={token} onChange={(e) => setToken(e.target.value)} dir="ltr" autoComplete="off" className="input-field font-mono" placeholder="github_pat_..." />
-      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">يُستخدم الرمز أثناء الطلب فقط ولا يتم تخزينه في المتصفح.</p>
-      {status && <div className={`mt-4 flex items-start gap-2 rounded-lg p-3 text-sm ${status.type === 'success' ? 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-300' : 'bg-error-50 text-error-700 dark:bg-error-950 dark:text-error-300'}`}>{status.type === 'success' ? <CheckCircle2 className="h-5 w-5 shrink-0" /> : <Info className="h-5 w-5 shrink-0" />}{status.message}</div>}
-      <button onClick={uploadToGithub} disabled={saving || !token.trim()} className="btn-primary mt-5 disabled:cursor-not-allowed disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}رفع وحفظ في GitHub<GitBranch className="h-4 w-4" /><FileJson className="h-4 w-4" /></button>
-    </div>
-  </div>
+  const isVideo = form.kind !== 'project'
+  return <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-950 sm:px-6 lg:px-8"><div className="mx-auto max-w-3xl"><div className="mb-8"><div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300"><ShieldCheck className="h-4 w-4" />مسار إدارة خاص</div><h1 className="text-3xl font-bold text-gray-900 dark:text-white">لوحة إدارة المحتوى</h1><p className="mt-2 text-gray-600 dark:text-gray-400">هذه الصفحة منفصلة عن الواجهة العامة. يتم حفظ الروابط فقط داخل Neon ولا يتم رفع ملفات إلى الخادم.</p></div><div className="mb-6 flex items-start gap-3 rounded-xl bg-primary-50 p-4 text-sm text-primary-800 dark:bg-primary-950/40 dark:text-primary-200"><Database className="mt-0.5 h-5 w-5 shrink-0" /><span>تأكد من إعداد <strong>DATABASE_URL</strong> و<strong>ADMIN_SECRET</strong> في Vercel وتشغيل مخطط `neon/schema.sql` مرة واحدة.</span></div><form onSubmit={submit} className="card space-y-5 p-6"><div className="grid gap-5 sm:grid-cols-2"><div><label className="mb-2 block text-sm font-medium">نوع المحتوى</label><select value={form.kind} onChange={(e) => update('kind', e.target.value)} className="input-field"><option value="project">مشروع / تطبيق</option><option value="system-video">فيديو شرح نظام</option><option value="content-video">فيديو صناعة محتوى</option></select></div><div><label className="mb-2 block text-sm font-medium">التخصص</label><select value={form.category} onChange={(e) => update('category', e.target.value)} className="input-field"><option value="android">أندرويد</option><option value="desktop">ديسكتاوب</option><option value="content-creation">صناعة محتوى</option><option value="system-video">شرح أنظمة</option></select></div></div><div><label className="mb-2 block text-sm font-medium">العنوان *</label><input value={form.title} onChange={(e) => update('title', e.target.value)} className="input-field" required /></div><div><label className="mb-2 block text-sm font-medium">الوصف</label><textarea value={form.description} onChange={(e) => update('description', e.target.value)} rows={3} className="input-field resize-none" /></div><div><label className="mb-2 block text-sm font-medium">رابط الصورة</label><input type="url" value={form.imageUrl} onChange={(e) => update('imageUrl', e.target.value)} dir="ltr" placeholder="https://..." className="input-field" /></div><div><label className="mb-2 block text-sm font-medium">{isVideo ? 'رابط الفيديو' : 'رابط العرض / التجربة'}</label><input type="url" value={form.contentUrl} onChange={(e) => update('contentUrl', e.target.value)} dir="ltr" placeholder="https://..." className="input-field" /></div>{!isVideo && <div><label className="mb-2 block text-sm font-medium">التقنيات (بفواصل)</label><input value={form.technologies} onChange={(e) => update('technologies', e.target.value)} dir="ltr" placeholder="React, Node.js" className="input-field" /></div>}{isVideo && <div className="grid gap-5 sm:grid-cols-3"><div><label className="mb-2 block text-sm font-medium">الموضوع</label><input value={form.topic} onChange={(e) => update('topic', e.target.value)} className="input-field" /></div><div><label className="mb-2 block text-sm font-medium">المشاهدات</label><input value={form.views} onChange={(e) => update('views', e.target.value)} className="input-field" /></div><div><label className="mb-2 block text-sm font-medium">المدة</label><input value={form.duration} onChange={(e) => update('duration', e.target.value)} className="input-field" /></div></div>}<div><label className="mb-2 block text-sm font-medium">رمز الإدارة</label><input type="password" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="off" dir="ltr" className="input-field" required /><p className="mt-2 text-xs text-gray-500">لا يتم تخزين الرمز في المتصفح.</p></div>{status && <div className={`flex items-start gap-2 rounded-lg p-3 text-sm ${status.type === 'success' ? 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-300' : 'bg-error-50 text-error-700 dark:bg-error-950 dark:text-error-300'}`}>{status.type === 'success' ? <CheckCircle2 className="h-5 w-5 shrink-0" /> : <Info className="h-5 w-5 shrink-0" />}{status.message}</div>}<button disabled={saving} className="btn-primary disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}حفظ المحتوى في Neon</button></form></div></main>
 }

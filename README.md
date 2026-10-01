@@ -1,8 +1,18 @@
-# React + Vite
+# Zazo Brand
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+واجهة React/Vite لعرض المشاريع والفيديوهات، مع API serverless على Vercel وقاعدة بيانات Neon. الموقع يحفظ **الروابط فقط**: رابط الصورة ورابط العرض أو الفيديو، ولا يرفع ملفات ثنائية إلى الخادم.
 
-Currently, two official plugins are available:
+## إعداد Neon وVercel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+نفّذ الملف `neon/schema.sql` مرة واحدة داخل Neon SQL Editor. بعد ذلك أضف متغيري البيئة التاليين في إعدادات Vercel:
+
+| المتغير | الاستخدام |
+| --- | --- |
+| `DATABASE_URL` | رابط اتصال Neon السري |
+| `ADMIN_SECRET` | رمز الوصول إلى API الإدارة |
+
+## لوحة الإدارة
+
+لوحة الإدارة منفصلة عن الواجهة العامة في المسار `/control-panel`، ولا تظهر في قائمة التنقل. أدخل رمز `ADMIN_SECRET` وأضف نوع المحتوى والتخصص والعنوان وروابط الصورة والمحتوى. يقوم `/api/content` بالحفظ في Neon، بينما تقرأ الصفحات العامة البيانات حسب التخصص عبر `GET /api/content?kind=...`.
+
+لا تضع `DATABASE_URL` أو `ADMIN_SECRET` داخل ملفات `VITE_*` أو داخل GitHub.
