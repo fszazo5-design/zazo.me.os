@@ -1,0 +1,5 @@
+[
+  { "id": "all", "label": "الكل", "icon": "layers" },
+  { "id": "android", "label": "تطبيقات أندرويد", "icon": "smartphone" },
+  { "id": "desktop", "label": "برامج ديسكتاوب", "icon": "monitor" }
+]

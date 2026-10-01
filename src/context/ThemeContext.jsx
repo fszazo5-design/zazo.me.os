@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} })
 
+// eslint-disable-next-line react/prop-types
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
