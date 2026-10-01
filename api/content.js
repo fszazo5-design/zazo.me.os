@@ -43,13 +43,17 @@ export default async function handler(request, response) {
     if (!body?.kind || !allowedKinds.includes(body.kind) || !body.title?.trim()) {
       return response.status(400).json({ error: 'kind و title مطلوبان' })
     }
+    const contentUrl = body.contentUrl?.trim() || ''
+    if (body.category === 'appetize' && !contentUrl.startsWith('https://appetize.io/embed/')) {
+      return response.status(400).json({ error: 'رابط Appetize يجب أن يبدأ بـ https://appetize.io/embed/' })
+    }
     const technologies = Array.isArray(body.technologies) ? body.technologies : []
     const [row] = await sql`
       INSERT INTO portfolio_content
         (kind, title, description, category, image_url, content_url, technologies, topic, views, duration)
       VALUES
         (${body.kind}, ${body.title.trim()}, ${body.description?.trim() || ''}, ${body.category?.trim() || ''},
-         ${body.imageUrl?.trim() || ''}, ${body.contentUrl?.trim() || ''}, ${JSON.stringify(technologies)}::jsonb,
+         ${body.imageUrl?.trim() || ''}, ${contentUrl}, ${JSON.stringify(technologies)}::jsonb,
          ${body.topic?.trim() || ''}, ${body.views?.trim() || ''}, ${body.duration?.trim() || ''})
       RETURNING *
     `
