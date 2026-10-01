@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
-  Lock, Plus, Trash2, Edit3, X, Upload, Link2, Video,
-  Smartphone, Monitor, Film, Save, Eye, EyeOff, Check, AlertCircle
+  Lock, Plus, Trash2, Edit3, X, Smartphone, Monitor, Film, Video,
+  Link2, Save, Eye, EyeOff, Check, AlertCircle, ShieldCheck, Info, Loader2, Image
 } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
 const categoryOptions = [
   { value: 'android', label: 'تطبيق أندرويد', icon: Smartphone },
@@ -11,10 +12,18 @@ const categoryOptions = [
   { value: 'system-video', label: 'فيديو نظام', icon: Video },
 ]
 
-const initialItems = [
-  { id: 1, title: 'Smart Inventory Manager', category: 'android', apkUrl: 'https://example.com/app.apk', videoUrl: 'https://youtube.com/watch?v=123', description: 'نظام إدارة مخزون' },
-  { id: 2, title: 'Desktop POS System', category: 'desktop', apkUrl: '', videoUrl: 'https://youtube.com/watch?v=456', description: 'نظام نقاط بيع' },
-]
+const isVideoCategory = (cat) => cat === 'content-creation' || cat === 'system-video'
+
+const emptyForm = {
+  title: '',
+  description: '',
+  category: 'android',
+  emulatorUrl: '',
+  sandboxUrl: '',
+  videoUrl: '',
+  technologies: '',
+  imageUrl: '',
+}
 
 export default function AdminDashboard() {
   const [authed, setAuthed] = useState(false)
@@ -22,19 +31,37 @@ export default function AdminDashboard() {
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState('')
 
-  const [items, setItems] = useState(initialItems)
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [toast, setToast] = useState(null)
 
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'android',
-    apkUrl: '',
-    videoUrl: '',
-    cloudUrl: '',
-  })
+  const [formData, setFormData] = useState({ ...emptyForm })
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const fetchProjects = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('portfolio_projects')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) {
+      showToast('تعذّر تحميل المشاريع من قاعدة البيانات', 'error')
+    } else {
+      setItems(data || [])
+    }
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if (authed) fetchProjects()
+  }, [authed, fetchProjects])
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -46,49 +73,91 @@ export default function AdminDashboard() {
     }
   }
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
-
   const resetForm = () => {
-    setFormData({ title: '', description: '', category: 'android', apkUrl: '', videoUrl: '', cloudUrl: '' })
+    setFormData({ ...emptyForm })
     setEditingId(null)
     setShowForm(false)
   }
 
-  const handleSubmit = (e) => {
+  const openAddForm = () => {
+    setEditingId(null)
+    setFormData({ ...emptyForm })
+    setShowForm(true)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!formData.title.trim()) {
       showToast('يرجى إدخال عنوان المشروع', 'error')
       return
     }
-    if (editingId) {
-      setItems((prev) => prev.map((it) => (it.id === editingId ? { ...it, ...formData } : it)))
-      showToast('تم تحديث المشروع بنجاح')
-    } else {
-      setItems((prev) => [...prev, { id: Date.now(), ...formData }])
-      showToast('تم إضافة المشروع بنجاح')
+
+    setSaving(true)
+
+    const payload = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      category: formData.category,
+      technologies: formData.technologies.trim(),
+      emulator_url: formData.emulatorUrl.trim(),
+      sandbox_url: formData.sandboxUrl.trim(),
+      video_url: formData.videoUrl.trim(),
+      image_url: formData.imageUrl.trim(),
     }
-    resetForm()
+
+    if (editingId) {
+      const { error } = await supabase
+        .from('portfolio_projects')
+        .update(payload)
+        .eq('id', editingId)
+      if (error) {
+        showToast('حدث خطأ أثناء التحديث', 'error')
+      } else {
+        showToast('تم تحديث المشروع بنجاح')
+        resetForm()
+        fetchProjects()
+      }
+    } else {
+      const { error } = await supabase
+        .from('portfolio_projects')
+        .insert(payload)
+      if (error) {
+        showToast('حدث خطأ أثناء الإضافة', 'error')
+      } else {
+        showToast('تم إضافة المشروع بنجاح')
+        resetForm()
+        fetchProjects()
+      }
+    }
+    setSaving(false)
   }
 
   const handleEdit = (item) => {
     setEditingId(item.id)
     setFormData({
-      title: item.title,
-      description: item.description,
+      title: item.title || '',
+      description: item.description || '',
       category: item.category,
-      apkUrl: item.apkUrl || '',
-      videoUrl: item.videoUrl || '',
-      cloudUrl: item.cloudUrl || '',
+      emulatorUrl: item.emulator_url || '',
+      sandboxUrl: item.sandbox_url || '',
+      videoUrl: item.video_url || '',
+      technologies: item.technologies || '',
+      imageUrl: item.image_url || '',
     })
     setShowForm(true)
   }
 
-  const handleDelete = (id) => {
-    setItems((prev) => prev.filter((it) => it.id !== id))
-    showToast('تم حذف المشروع')
+  const handleDelete = async (id) => {
+    const { error } = await supabase
+      .from('portfolio_projects')
+      .delete()
+      .eq('id', id)
+    if (error) {
+      showToast('تعذّر حذف المشروع', 'error')
+    } else {
+      setItems((prev) => prev.filter((it) => it.id !== id))
+      showToast('تم حذف المشروع')
+    }
   }
 
   // Login screen
@@ -156,12 +225,9 @@ export default function AdminDashboard() {
       <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">إدارة الأعمال</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">أضف وعدّل واحذف المشاريع والفيديوهات</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">أضف وعدّل واحذف المشاريع والفيديوهات — تُحفظ في قاعدة البيانات</p>
         </div>
-        <button
-          onClick={() => { setEditingId(null); setShowForm(true); setFormData({ title: '', description: '', category: 'android', apkUrl: '', videoUrl: '', cloudUrl: '' }) }}
-          className="btn-primary"
-        >
+        <button onClick={openAddForm} className="btn-primary">
           <Plus className="h-4 w-4" />
           إضافة مشروع
         </button>
@@ -173,7 +239,7 @@ export default function AdminDashboard() {
           { label: 'إجمالي المشاريع', value: items.length, icon: Plus },
           { label: 'تطبيقات أندرويد', value: items.filter((i) => i.category === 'android').length, icon: Smartphone },
           { label: 'برامج ديسكتاوب', value: items.filter((i) => i.category === 'desktop').length, icon: Monitor },
-          { label: 'فيديوهات', value: items.filter((i) => i.category === 'content-creation' || i.category === 'system-video').length, icon: Video },
+          { label: 'فيديوهات', value: items.filter((i) => isVideoCategory(i.category)).length, icon: Video },
         ].map((stat) => (
           <div key={stat.label} className="card p-4">
             <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-400">
@@ -187,10 +253,17 @@ export default function AdminDashboard() {
 
       {/* Items table */}
       <div className="card overflow-hidden">
-        <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">المشاريع الحالية</h2>
+          <button onClick={fetchProjects} className="text-xs font-medium text-primary-600 hover:underline dark:text-primary-400">
+            تحديث
+          </button>
         </div>
-        {items.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center px-5 py-16">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+          </div>
+        ) : items.length === 0 ? (
           <div className="px-5 py-16 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">لا توجد مشاريع بعد. ابدأ بإضافة مشروع جديد.</p>
           </div>
@@ -234,7 +307,7 @@ export default function AdminDashboard() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal header */}
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                 {editingId ? 'تعديل مشروع' : 'إضافة مشروع جديد'}
               </h2>
@@ -295,44 +368,112 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* APK / Cloud URL */}
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Upload className="h-4 w-4" />
-                    رابط ملف APK أو رابط النظام السحابي
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={formData.apkUrl}
-                  onChange={(e) => setFormData({ ...formData, apkUrl: e.target.value })}
-                  placeholder="https://example.com/app.apk"
-                  className="input-field"
-                />
-              </div>
+              {/* Image URL (optional) */}
+              {!isVideoCategory(formData.category) && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Image className="h-4 w-4" />
+                      رابط صورة المشروع (اختياري)
+                    </span>
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                    className="input-field"
+                  />
+                </div>
+              )}
 
-              {/* Video URL */}
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Link2 className="h-4 w-4" />
-                    رابط فيديو الشرح أو المحتوى
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={formData.videoUrl}
-                  onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                  placeholder="https://youtube.com/watch?v=..."
-                  className="input-field"
-                />
-              </div>
+              {/* Technologies (optional, for android/desktop) */}
+              {!isVideoCategory(formData.category) && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">التقنيات المستخدمة</label>
+                  <input
+                    type="text"
+                    value={formData.technologies}
+                    onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
+                    placeholder="Android, Kotlin, Room DB (افصل بفاصلة)"
+                    className="input-field"
+                  />
+                </div>
+              )}
+
+              {/* Android: Appetize emulator URL */}
+              {formData.category === 'android' && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Smartphone className="h-4 w-4" />
+                      رابط/معرف المحاكي للتجربة (Appetize PublicKey / Emulator Embed URL)
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.emulatorUrl}
+                    onChange={(e) => setFormData({ ...formData, emulatorUrl: e.target.value })}
+                    placeholder="مثال: demo أو https://appetize.io/app/your-public-key"
+                    className="input-field"
+                  />
+                  <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-success-50 px-3 py-2 text-xs text-success-700 dark:bg-success-950 dark:text-success-400">
+                    <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                    أدخل معرف Appetize (PublicKey) أو رابط embed كامل. سيتمكن العملاء من تجربة التطبيق أونلاين فقط دون تحميل ملف APK.
+                  </p>
+                </div>
+              )}
+
+              {/* Desktop: Interactive sandbox URL */}
+              {formData.category === 'desktop' && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Monitor className="h-4 w-4" />
+                      رابط البيئة التفاعلية للاختبار (Web Demo / Interactive Sandbox URL)
+                    </span>
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.sandboxUrl}
+                    onChange={(e) => setFormData({ ...formData, sandboxUrl: e.target.value })}
+                    placeholder="https://your-sandbox-url.com/demo"
+                    className="input-field"
+                  />
+                  <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-success-50 px-3 py-2 text-xs text-success-700 dark:bg-success-950 dark:text-success-400">
+                    <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                    أدخل رابط البيئة التفاعلية (Web Demo أو Sandbox). سيتمكن العملاء من تجربة النظام مباشرة دون تحميل ملفات تنفيذية.
+                  </p>
+                </div>
+              )}
+
+              {/* Video categories: Video URL only */}
+              {isVideoCategory(formData.category) && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Link2 className="h-4 w-4" />
+                      رابط الفيديو (YouTube / Vimeo / رابط مباشر)
+                    </span>
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.videoUrl}
+                    onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="input-field"
+                  />
+                  <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-primary-50 px-3 py-2 text-xs text-primary-700 dark:bg-primary-950 dark:text-primary-400">
+                    <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                    هذا التصنيف مخصص للمشاهدة فقط عبر مشغل فيديو مدمج. لا تتوفر خيارات للاختبار أو التحميل.
+                  </p>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <button type="submit" className="btn-primary flex-1">
-                  <Save className="h-4 w-4" />
+                <button type="submit" disabled={saving} className="btn-primary flex-1 disabled:opacity-60">
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   {editingId ? 'حفظ التعديلات' : 'إضافة المشروع'}
                 </button>
                 <button type="button" onClick={resetForm} className="btn-secondary">

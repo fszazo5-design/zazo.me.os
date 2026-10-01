@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
-import { Code2, GitBranch, Send, Video, Mail } from 'lucide-react'
+import { Code2, MessageCircle, Phone } from 'lucide-react'
+
+const MESSENGER_URL = 'https://m.me/ahmd.alrwby.117154'
+const WHATSAPP_URL = 'https://wa.me/201091288031'
 
 export default function Footer() {
   return (
@@ -40,25 +43,48 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Social */}
+          {/* Contact */}
           <div>
             <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">تواصل معي</h3>
             <div className="flex gap-3">
-              {[
-                { icon: GitBranch, label: 'GitHub' },
-                { icon: Send, label: 'Twitter' },
-                { icon: Video, label: 'YouTube' },
-                { icon: Mail, label: 'Email' },
-              ].map(({ icon: Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition-all hover:border-primary-400 hover:bg-primary-50 hover:text-primary-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:bg-primary-950 dark:hover:text-primary-400"
-                >
-                  <Icon className="h-5 w-5" />
-                </a>
-              ))}
+              <a
+                href={MESSENGER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Messenger"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition-all hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-blue-500 dark:hover:bg-blue-950 dark:hover:text-blue-400"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </a>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition-all hover:border-success-400 hover:bg-success-50 hover:text-success-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-success-500 dark:hover:bg-success-950 dark:hover:text-success-400"
+              >
+                <Phone className="h-5 w-5" />
+              </a>
+            </div>
+            <div className="mt-4 space-y-2">
+              <a
+                href={MESSENGER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+              >
+                <MessageCircle className="h-4 w-4" />
+                مراسلة عبر ماسنجر
+              </a>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-success-600 dark:text-gray-400 dark:hover:text-success-400"
+              >
+                <Phone className="h-4 w-4" />
+                واتساب: +20 109 128 8031
+              </a>
             </div>
           </div>
         </div>

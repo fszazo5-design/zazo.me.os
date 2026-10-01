@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Play, Sparkles, Smartphone, Monitor, Video } from 'lucide-react'
+import { ArrowLeft, Play, Sparkles, Smartphone, Monitor, Video, MessageCircle, Phone } from 'lucide-react'
 import { stats } from '../data/mockData'
+
+const MESSENGER_URL = 'https://m.me/ahmd.alrwby.117154'
+const WHATSAPP_URL = 'https://wa.me/201091288031'
 
 const iconMap = { briefcase: Sparkles, users: Sparkles, smartphone: Smartphone, award: Sparkles }
 
@@ -40,6 +43,28 @@ export default function Hero() {
               <Play className="h-4 w-4" />
               شاهد العروض
             </Link>
+          </div>
+
+          {/* Contact buttons */}
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 animate-fade-in-up sm:flex-row" style={{ animationDelay: '0.25s' }}>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-success-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-success-600/25 transition-all hover:bg-success-700 hover:shadow-xl w-full sm:w-auto"
+            >
+              <Phone className="h-4 w-4" />
+              تواصل عبر واتساب
+            </a>
+            <a
+              href={MESSENGER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-xl w-full sm:w-auto"
+            >
+              <MessageCircle className="h-4 w-4" />
+              مراسلة عبر ماسنجر
+            </a>
           </div>
 
           {/* Quick links */}
