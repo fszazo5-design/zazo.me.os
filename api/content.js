@@ -37,6 +37,15 @@ export default async function handler(request, response) {
       return response.status(200).json(rows.map(normalize))
     }
 
+    if (request.method === 'DELETE') {
+      const body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
+      const id = String(body?.id || '').trim()
+      if (!/^\d+$/.test(id)) return response.status(400).json({ error: 'معرف المحتوى غير صحيح' })
+      const [row] = await sql`DELETE FROM portfolio_content WHERE id = ${id} RETURNING *`
+      if (!row) return response.status(404).json({ error: 'المحتوى غير موجود' })
+      return response.status(200).json(normalize(row))
+    }
+
     if (request.method !== 'POST') return response.status(405).json({ error: 'Method not allowed' })
     const body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
     const allowedKinds = ['project', 'system-video', 'content-video']
