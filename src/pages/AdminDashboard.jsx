@@ -50,7 +50,7 @@ export default function AdminDashboard() {
       const response = await fetch(CONTENT_API_URL, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: item.id }) })
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'تعذر حذف المحتوى')
-      setItems((current) => current.filter((entry) => String(entry.id) !== String(item.id)))
+      await loadItems()
       setStatus({ type: 'success', message: `تم حذف «${item.title}» من Neon.` })
     } catch (error) { setStatus({ type: 'error', message: error.message }) } finally { setDeletingId(null) }
   }
