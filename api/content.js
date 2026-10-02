@@ -53,6 +53,13 @@ export default async function handler(request, response) {
       return response.status(400).json({ error: 'kind و title مطلوبان' })
     }
     const contentUrl = body.contentUrl?.trim() || ''
+    const imageUrl = body.imageUrl?.trim() || ''
+    if (imageUrl.startsWith('data:image/') && imageUrl.length > 4_000_000) {
+      return response.status(400).json({ error: 'حجم الصورة كبير جدًا. الحد الأقصى 3 ميجابايت.' })
+    }
+    if (imageUrl.startsWith('data:') && !/^data:image\/(png|jpeg|webp|gif);base64,/.test(imageUrl)) {
+      return response.status(400).json({ error: 'صيغة الصورة غير مدعومة.' })
+    }
     if (body.category === 'appetize' && !contentUrl.startsWith('https://appetize.io/embed/')) {
       return response.status(400).json({ error: 'رابط Appetize يجب أن يبدأ بـ https://appetize.io/embed/' })
     }
@@ -62,7 +69,7 @@ export default async function handler(request, response) {
         (kind, title, description, category, image_url, content_url, technologies, topic, views, duration)
       VALUES
         (${body.kind}, ${body.title.trim()}, ${body.description?.trim() || ''}, ${body.category?.trim() || ''},
-         ${body.imageUrl?.trim() || ''}, ${contentUrl}, ${JSON.stringify(technologies)}::jsonb,
+         ${imageUrl}, ${contentUrl}, ${JSON.stringify(technologies)}::jsonb,
          ${body.topic?.trim() || ''}, ${body.views?.trim() || ''}, ${body.duration?.trim() || ''})
       RETURNING *
     `
