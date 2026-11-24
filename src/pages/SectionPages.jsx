@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { ArrowLeft, Bot, BriefcaseBusiness, Code2, Download, Layers3, LifeBuoy, Sparkles, Wrench } from 'lucide-react'
+import { ArrowLeft, Bot, BriefcaseBusiness, Code2, Download, Layers3, LifeBuoy, LoaderCircle, Send, Sparkles, Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadContent } from '../lib/content'
+import { askZazo, loadContent } from '../lib/content'
 
 const pageCopy = {
   showcase: {
@@ -72,7 +72,31 @@ function PortalCard({ item, index }) {
 }
 
 export function BrainPage() {
-  return <PageShell icon={Bot} eyebrow="ZazoBrain / مساحة الحوار" title="فكرة صغيرة؟ دعنا نوسّعها معًا." description="هذه الصفحة مهيّأة لتكون مدخل المحادثة الذكية. اربط واجهة الدردشة بخدمة الذكاء الخاصة بك من خلال API، واحتفظ بالتجربة داخل عالم Zazo." gradient="from-violet-600 to-fuchsia-500"><div className="grid gap-5 md:grid-cols-3"><InfoBox icon={Sparkles} title="يفهم السياق" text="حوّل ملاحظاتك المتناثرة إلى خطوات مرتبة قابلة للتنفيذ." /><InfoBox icon={Bot} title="يتحدث بلغتك" text="حوار طبيعي، واضح، ومصمم ليقرب التقنية من فكرتك." /><InfoBox icon={Layers3} title="يبني معك" text="من أول سؤال إلى تصور منتج يمكن أن يرى النور." /></div><Link to="/services" className="btn-primary mt-8">اطلب جلسة بناء <ArrowLeft className="h-4 w-4" /></Link></PageShell>
+  const [messages, setMessages] = useState([{ role: 'assistant', text: 'أهلًا بيك! أنا ZazoBrain. اسألني عن الخدمات أو الأسعار أو فكرة مشروعك، وهساعدك بالمعلومات المتاحة.' }])
+  const [question, setQuestion] = useState('')
+  const [loading, setLoading] = useState(false)
+  const submit = async (event) => {
+    event.preventDefault()
+    const value = question.trim()
+    if (!value || loading) return
+    setQuestion('')
+    setMessages((items) => [...items, { role: 'user', text: value }])
+    setLoading(true)
+    try {
+      const result = await askZazo(value)
+      setMessages((items) => [...items, { role: 'assistant', text: result.answer }])
+    } catch (error) {
+      setMessages((items) => [...items, { role: 'assistant', text: error.message || 'حصلت مشكلة مؤقتة. جرّب تاني بعد لحظات.' }])
+    } finally { setLoading(false) }
+  }
+  return <PageShell icon={Bot} eyebrow="ZazoBrain / مساحة الحوار" title="فكرة صغيرة؟ دعنا نوسّعها معًا." description="اسأل عن الخدمات والأسعار وبداية مشروعك. الشات يبحث في قاعدة المعرفة الخاصة بـ Zazo ثم يصيغ لك ردًا مصريًا واضحًا." gradient="from-violet-600 to-fuchsia-500">
+    <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/70 shadow-2xl shadow-violet-950/30">
+      <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/20 text-violet-300"><Bot className="h-5 w-5" /></span><div><p className="font-black text-white">ZazoBrain</p><p className="text-xs text-slate-400">مساعد المبيعات والخدمات</p></div><span className="mr-auto flex items-center gap-1.5 text-xs text-emerald-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> متاح</span></div>
+      <div className="flex min-h-[330px] flex-col gap-4 p-5" dir="rtl">{messages.map((message, index) => <div key={`${message.role}-${index}`} className={`max-w-[90%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-7 ${message.role === 'user' ? 'self-start bg-violet-500 text-white' : 'self-end bg-white/[0.08] text-slate-200'}`}>{message.text}</div>)}{loading && <div className="self-end rounded-2xl bg-white/[0.08] px-4 py-3 text-sm text-slate-400"><LoaderCircle className="inline h-4 w-4 animate-spin" /> جاري التفكير...</div>}</div>
+      <form onSubmit={submit} className="flex gap-2 border-t border-white/10 p-4" dir="rtl"><input value={question} onChange={(event) => setQuestion(event.target.value)} disabled={loading} placeholder="اكتب سؤالك هنا..." className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-violet-400" /><button type="submit" disabled={loading || !question.trim()} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-500 text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-40" aria-label="إرسال السؤال"><Send className="h-5 w-5" /></button></form>
+    </div>
+    <div className="mt-8 grid gap-5 md:grid-cols-3"><InfoBox icon={Sparkles} title="يعتمد على المعرفة" text="يبحث في المعلومات التي أضفتها قبل صياغة الرد." /><InfoBox icon={Bot} title="يتحدث بلغتك" text="ردود مصرية مهذبة ومباشرة بدون وعود أو أرقام مخترعة." /><InfoBox icon={Layers3} title="يبني معك" text="اسأل خطوة بخطوة عن الفكرة والمتطلبات المناسبة." /></div>
+  </PageShell>
 }
 
 export function SourcesPage() {

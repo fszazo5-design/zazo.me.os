@@ -19,3 +19,11 @@ export async function loadAllContent() {
   const entries = await Promise.all(types.map(async (type) => [type, await loadContent(type)]))
   return Object.fromEntries(entries)
 }
+
+export const CHAT_API_URL = `${API_ROOT}/chat`
+export async function askZazo(question) {
+  const response = await fetch(CHAT_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) })
+  const result = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(result.error || 'تعذر الاتصال بـ ZazoBrain')
+  return result
+}
