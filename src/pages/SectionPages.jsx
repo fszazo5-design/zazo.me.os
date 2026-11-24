@@ -11,6 +11,7 @@ const pageCopy = {
     title: 'أعمالي التي تحوّل الفكرة إلى حضور',
     description: 'جولة بين تطبيقات وتجارب رقمية صُممت لتعمل بسلاسة، وتترك انطباعًا لا يختفي بعد أول نقرة.',
     accent: 'from-blue-600 to-cyan-500',
+    image: '/cards/works.png',
     cta: 'شاهد المشاريع',
     to: '/showcase',
   },
@@ -20,6 +21,7 @@ const pageCopy = {
     title: 'تحدّث مع ZazoBrain',
     description: 'مساحة حوار ذكية للأفكار والأسئلة والحلول. اكتب ما يدور في بالك، ودع ZazoBrain يرتّب الفوضى إلى اتجاه واضح.',
     accent: 'from-violet-600 to-fuchsia-500',
+    image: '/cards/brain.png',
     cta: 'ابدأ المحادثة',
     to: '/zazobrain',
   },
@@ -29,6 +31,7 @@ const pageCopy = {
     title: 'مصادر مجانية تفتح لك الطريق',
     description: 'ملفات وقوالب وتجارب صغيرة جاهزة للتحميل؛ مختارة لتختصر وقتك وتمنح مشروعك دفعة بداية حقيقية.',
     accent: 'from-emerald-600 to-teal-400',
+    image: '/cards/sources.png',
     cta: 'تصفّح المصادر',
     to: '/free-sources',
   },
@@ -38,6 +41,7 @@ const pageCopy = {
     title: 'خدمات تصنع فرقًا ملموسًا',
     description: 'تطوير تطبيقات، بناء واجهات، أتمتة ذكية وصناعة محتوى؛ حلول عملية بلمسة إبداعية تناسب رؤيتك.',
     accent: 'from-orange-500 to-rose-500',
+    image: '/cards/services.png',
     cta: 'اكتشف الخدمات',
     to: '/services',
   },
@@ -58,7 +62,7 @@ function PortalCard({ item, index }) {
   return <Link to={item.to} className="portal-card group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-6 backdrop-blur-xl">
     <div className={`absolute -left-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${item.accent} opacity-20 blur-2xl transition duration-500 group-hover:opacity-50`} />
     <div className="relative flex h-full min-h-[270px] flex-col">
-      <div className={`mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${item.accent} text-white shadow-lg`}><Icon className="h-7 w-7" /></div>
+      <div className="relative mb-6 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/50"><img src={item.image} alt="" className="h-36 w-full object-cover transition duration-500 group-hover:scale-105" /><div className={`absolute bottom-3 right-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${item.accent} text-white shadow-lg`}><Icon className="h-6 w-6" /></div></div>
       <span className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">0{index + 1} · {item.eyebrow}</span>
       <h3 className="mt-3 text-xl font-black leading-tight text-white">{item.title}</h3>
       <p className="mt-3 flex-1 text-sm leading-7 text-slate-400">{item.description}</p>
