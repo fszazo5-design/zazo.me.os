@@ -7,7 +7,7 @@ export const MEDIA_API_URL = `${API_ROOT}/media`
 export const MEDIA_SIGN_API_URL = `${MEDIA_API_URL}/sign`
 
 export async function loadContent(type) {
-  const kind = type === 'projects' ? 'project' : type === 'systemVideos' ? 'system-video' : type === 'contentVideos' ? 'content-video' : type
+  const kind = type === 'projects' ? 'project' : type === 'systemVideos' ? 'system-video' : type === 'contentVideos' ? 'content-video' : type === 'sources' ? 'source' : type === 'services' ? 'service' : type
   const response = await fetch(`${CONTENT_API_URL}?kind=${encodeURIComponent(kind)}`)
   if (!response.ok) throw new Error('تعذر تحميل المحتوى')
   const result = await response.json()

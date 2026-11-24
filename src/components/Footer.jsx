@@ -30,9 +30,10 @@ export default function Footer() {
             <ul className="space-y-2">
               {[
                 { to: '/', label: 'الرئيسية' },
-                { to: '/showcase', label: 'المشاريع' },
-                { to: '/system-videos', label: 'شرح الأنظمة' },
-                { to: '/content-videos', label: 'صناعة المحتوى' },
+                { to: '/showcase', label: 'أعمالي' },
+                { to: '/zazobrain', label: 'تحدث مع ZazoBrain' },
+                { to: '/free-sources', label: 'مصادر مجانية' },
+                { to: '/services', label: 'الخدمات' },
               ].map((l) => (
                 <li key={l.to}>
                   <Link to={l.to} className="text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, Film, Layers, Loader2, Video } from 'lucide-react'
 import Hero from '../components/Hero'
 import { loadAllContent } from '../lib/content'
+import { PortalCards } from './SectionPages'
 
 export default function Home() {
   const [content, setContent] = useState({ projects: [], systemVideos: [], contentVideos: [] })
@@ -21,6 +22,7 @@ export default function Home() {
   return (
     <div>
       <Hero />
+      <PortalCards />
       {loading ? <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary-500" /></div> : (
         <>
           <ContentSection title="مشاريع مختارة" subtitle="المحتوى المنشور من Neon" items={projects.slice(0, 3)} empty="لا توجد مشاريع منشورة بعد." link="/showcase" type="project" />

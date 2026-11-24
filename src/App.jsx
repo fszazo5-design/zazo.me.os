@@ -6,6 +6,7 @@ import Showcase from './pages/Showcase'
 import SystemVideos from './pages/SystemVideos'
 import ContentVideos from './pages/ContentVideos'
 import AdminDashboard from './pages/AdminDashboard'
+import { BrainPage, ServicesPage, SourcesPage } from './pages/SectionPages'
 
 function App() {
   return <ThemeProvider><BrowserRouter><Routes>
@@ -16,6 +17,9 @@ function App() {
       <Route path="/showcase" element={<Showcase />} />
       <Route path="/system-videos" element={<SystemVideos />} />
       <Route path="/content-videos" element={<ContentVideos />} />
+      <Route path="/zazobrain" element={<BrainPage />} />
+      <Route path="/free-sources" element={<SourcesPage />} />
+      <Route path="/services" element={<ServicesPage />} />
     </Route>
   </Routes></BrowserRouter></ThemeProvider>
 }
