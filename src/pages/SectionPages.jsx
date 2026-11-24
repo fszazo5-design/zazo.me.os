@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { ArrowLeft, Bot, BriefcaseBusiness, Code2, Download, Layers3, LifeBuoy, LoaderCircle, Send, Sparkles, Wrench } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowLeft, Bot, BriefcaseBusiness, ChevronLeft, ChevronRight, Code2, Download, Layers3, LifeBuoy, LoaderCircle, Send, Sparkles, Wrench } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { askZazo, loadContent } from '../lib/content'
 
@@ -48,18 +48,35 @@ const pageCopy = {
 }
 
 export function PortalCards() {
+  const trackRef = useRef(null)
+  const pausedRef = useRef(false)
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return undefined
+    const timer = window.setInterval(() => {
+      if (pausedRef.current) return
+      const maxScroll = track.scrollWidth - track.clientWidth
+      if (maxScroll <= 0) return
+      const next = track.scrollLeft + 320
+      track.scrollTo({ left: next >= maxScroll - 4 ? 0 : next, behavior: 'smooth' })
+    }, 3600)
+    return () => window.clearInterval(timer)
+  }, [])
+  const move = (amount) => trackRef.current?.scrollBy({ left: amount, behavior: 'smooth' })
+  const pause = () => { pausedRef.current = true }
+  const resume = () => { pausedRef.current = false }
   return <section className="portal-section mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
     <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div><span className="section-kicker">بوابة Zazo</span><h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">اختر المسار الذي يشبه فكرتك</h2></div>
-      <p className="max-w-md text-sm leading-7 text-slate-400">كل أيقونة هنا ليست رابطًا عابرًا؛ إنها بداية صفحة كاملة صُممت لتأخذك إلى التجربة مباشرة.</p>
+      <div className="flex items-center gap-4"><p className="max-w-md text-sm leading-7 text-slate-400">الكروت تتحرك تلقائيًا؛ مرّرها بإصبعك أو استخدم الأسهم لاختيار الصفحة المناسبة.</p><div className="hidden gap-2 sm:flex"><button type="button" onClick={() => move(-340)} aria-label="الكروت السابقة" className="carousel-control"><ChevronRight className="h-5 w-5" /></button><button type="button" onClick={() => move(340)} aria-label="الكروت التالية" className="carousel-control"><ChevronLeft className="h-5 w-5" /></button></div></div>
     </div>
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{Object.entries(pageCopy).map(([key, item], index) => <PortalCard key={key} item={item} index={index} />)}</div>
+    <div ref={trackRef} dir="ltr" onMouseEnter={pause} onMouseLeave={resume} onFocus={pause} onBlur={resume} onTouchStart={pause} onTouchEnd={resume} className="portal-track flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 [scrollbar-width:thin]">{Object.entries(pageCopy).map(([key, item], index) => <PortalCard key={key} item={item} index={index} />)}</div>
   </section>
 }
 
 function PortalCard({ item, index }) {
   const Icon = item.icon
-  return <Link to={item.to} className="portal-card group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-6 backdrop-blur-xl">
+  return <Link dir="rtl" to={item.to} className="portal-card group relative min-w-[min(82vw,310px)] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-6 backdrop-blur-xl sm:min-w-[310px]">
     <div className={`absolute -left-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br ${item.accent} opacity-20 blur-2xl transition duration-500 group-hover:opacity-50`} />
     <div className="relative flex h-full min-h-[270px] flex-col">
       <div className="relative mb-6 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/50"><img src={item.image} alt="" className="h-36 w-full object-cover transition duration-500 group-hover:scale-105" /><div className={`absolute bottom-3 right-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${item.accent} text-white shadow-lg`}><Icon className="h-6 w-6" /></div></div>
