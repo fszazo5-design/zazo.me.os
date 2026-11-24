@@ -11,7 +11,7 @@ const pageCopy = {
     title: 'أعمالي التي تحوّل الفكرة إلى حضور',
     description: 'جولة بين تطبيقات وتجارب رقمية صُممت لتعمل بسلاسة، وتترك انطباعًا لا يختفي بعد أول نقرة.',
     accent: 'from-blue-600 to-cyan-500',
-    image: '/cards/works.png',
+    image: '/cards/works.webp',
     cta: 'شاهد المشاريع',
     to: '/showcase',
   },
@@ -21,7 +21,7 @@ const pageCopy = {
     title: 'تحدّث مع ZazoBrain',
     description: 'مساحة حوار ذكية للأفكار والأسئلة والحلول. اكتب ما يدور في بالك، ودع ZazoBrain يرتّب الفوضى إلى اتجاه واضح.',
     accent: 'from-violet-600 to-fuchsia-500',
-    image: '/cards/brain.png',
+    image: '/cards/brain.webp',
     cta: 'ابدأ المحادثة',
     to: '/zazobrain',
   },
@@ -31,7 +31,7 @@ const pageCopy = {
     title: 'مصادر مجانية تفتح لك الطريق',
     description: 'ملفات وقوالب وتجارب صغيرة جاهزة للتحميل؛ مختارة لتختصر وقتك وتمنح مشروعك دفعة بداية حقيقية.',
     accent: 'from-emerald-600 to-teal-400',
-    image: '/cards/sources.png',
+    image: '/cards/sources.webp',
     cta: 'تصفّح المصادر',
     to: '/free-sources',
   },
@@ -41,7 +41,7 @@ const pageCopy = {
     title: 'خدمات تصنع فرقًا ملموسًا',
     description: 'تطوير تطبيقات، بناء واجهات، أتمتة ذكية وصناعة محتوى؛ حلول عملية بلمسة إبداعية تناسب رؤيتك.',
     accent: 'from-orange-500 to-rose-500',
-    image: '/cards/services.png',
+    image: '/cards/services.webp',
     cta: 'اكتشف الخدمات',
     to: '/services',
   },
@@ -68,7 +68,7 @@ export function PortalCards() {
   return <section className="portal-section mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
     <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div><span className="section-kicker">بوابة Zazo</span><h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">اختر المسار الذي يشبه فكرتك</h2></div>
-      <div className="flex items-center gap-4"><p className="max-w-md text-sm leading-7 text-slate-400">الكروت تتحرك تلقائيًا؛ مرّرها بإصبعك أو استخدم الأسهم لاختيار الصفحة المناسبة.</p><div className="hidden gap-2 sm:flex"><button type="button" onClick={() => move(-340)} aria-label="الكروت السابقة" className="carousel-control"><ChevronRight className="h-5 w-5" /></button><button type="button" onClick={() => move(340)} aria-label="الكروت التالية" className="carousel-control"><ChevronLeft className="h-5 w-5" /></button></div></div>
+      <div className="flex items-center gap-4"><p className="max-w-md text-sm leading-7 text-slate-400">استكشف مسارات Zazo واختَر الصفحة المناسبة لفكرتك.</p><div className="hidden gap-2 sm:flex"><button type="button" onClick={() => move(-340)} aria-label="الكروت السابقة" className="carousel-control"><ChevronRight className="h-5 w-5" /></button><button type="button" onClick={() => move(340)} aria-label="الكروت التالية" className="carousel-control"><ChevronLeft className="h-5 w-5" /></button></div></div>
     </div>
     <div ref={trackRef} dir="ltr" onMouseEnter={pause} onMouseLeave={resume} onFocus={pause} onBlur={resume} onTouchStart={pause} onTouchEnd={resume} className="portal-track flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 [scrollbar-width:thin]">{Object.entries(pageCopy).map(([key, item], index) => <PortalCard key={key} item={item} index={index} />)}</div>
   </section>

@@ -22,8 +22,20 @@ export async function loadAllContent() {
 
 export const CHAT_API_URL = `${API_ROOT}/chat`
 export async function askZazo(question) {
-  const response = await fetch(CHAT_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) })
-  const result = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(result.error || 'تعذر الاتصال بـ ZazoBrain')
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 45000)
+  let response
+  let result = {}
+  try {
+    response = await fetch(CHAT_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }), signal: controller.signal })
+    result = await response.json().catch(() => ({}))
+  } catch (error) {
+    if (error?.name === 'AbortError') throw new Error('الرد اتأخر شوية. جرّب إرسال السؤال تاني.')
+    throw new Error('حصلت مشكلة في الاتصال. جرّب تاني بعد لحظات.')
+  } finally {
+    window.clearTimeout(timeout)
+  }
+  if (!response.ok) throw new Error(result.error || 'حصلت مشكلة مؤقتة في ZazoBrain')
+  if (!result.answer) throw new Error('لم يصل رد من ZazoBrain. جرّب إرسال السؤال تاني.')
   return result
 }
