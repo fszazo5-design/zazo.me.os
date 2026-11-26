@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ArrowLeft, Bot, BriefcaseBusiness, ChevronLeft, ChevronRight, Code2, Download, Layers3, LifeBuoy, LoaderCircle, Send, Sparkles, Wrench } from 'lucide-react'
+import { ArrowLeft, Bot, BriefcaseBusiness, ChevronLeft, ChevronRight, Code2, Download, ExternalLink, Layers3, LifeBuoy, LoaderCircle, Send, Sparkles, Wrench } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { askZazo, loadContent } from '../lib/content'
@@ -129,7 +129,7 @@ export function ServicesPage() {
 }
 
 function ContentCards({ items, empty, kind }) {
-  return items.length ? <div className="mt-10 grid gap-4 sm:grid-cols-2">{items.map((item) => <a key={item.id} href={item.contentUrl || '#'} target={item.contentUrl ? '_blank' : undefined} rel={item.contentUrl ? 'noreferrer' : undefined} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><span className="text-xs font-bold uppercase tracking-[0.18em] text-primary-600">{kind === 'source' ? 'مصدر مفتوح' : 'خدمة متاحة'}</span><h2 className="mt-3 text-lg font-black text-gray-900">{item.title}</h2><p className="mt-2 text-sm leading-7 text-gray-600">{item.description}</p></a>)}</div> : <div className="mt-10 rounded-3xl border border-dashed border-gray-300 bg-gray-50 p-6 text-sm leading-7 text-gray-600">{empty}</div>
+  return items.length ? <div className="mt-10 grid gap-4 sm:grid-cols-2">{items.map((item) => <article key={item.id} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><span className="text-xs font-bold uppercase tracking-[0.18em] text-primary-600">{kind === 'source' ? 'مصدر مفتوح' : 'خدمة متاحة'}</span><h2 className="mt-3 text-lg font-black text-gray-900">{item.title}</h2><p className="mt-2 text-sm leading-7 text-gray-600">{item.description}</p>{kind === 'source' && item.contentUrl ? <div className="mt-5 flex flex-wrap gap-3"><a href={item.contentUrl} target="_blank" rel="noreferrer" className="btn-primary inline-flex items-center gap-2"><Download className="h-4 w-4" /> تحميل التطبيق</a>{item.videoUrl ? <a href={item.videoUrl} target="_blank" rel="noreferrer" className="btn-secondary inline-flex items-center gap-2"><Code2 className="h-4 w-4" /> تحميل السورس</a> : null}</div> : item.contentUrl ? <a href={item.contentUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary-700 hover:text-primary-900">عرض التفاصيل <ExternalLink className="h-4 w-4" /></a> : null}</article>)}</div> : <div className="mt-10 rounded-3xl border border-dashed border-gray-300 bg-gray-50 p-6 text-sm leading-7 text-gray-600">{empty}</div>
 }
 
 function PageShell({ icon: Icon, eyebrow, title, description, gradient, children }) {
