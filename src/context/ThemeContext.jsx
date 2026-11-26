@@ -6,9 +6,9 @@ const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} })
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('portfolio-theme')
+      const stored = localStorage.getItem('portfolio-theme-v2')
       if (stored) return stored
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      return 'light'
     }
     return 'dark'
   })
@@ -20,7 +20,7 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove('dark')
     }
-    localStorage.setItem('portfolio-theme', theme)
+    localStorage.setItem('portfolio-theme-v2', theme)
   }, [theme])
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
