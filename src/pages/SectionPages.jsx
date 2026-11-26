@@ -65,7 +65,7 @@ export function PortalCards() {
   const move = (amount) => trackRef.current?.scrollBy({ left: amount, behavior: 'smooth' })
   const pause = () => { pausedRef.current = true }
   const resume = () => { pausedRef.current = false }
-  return <section className="portal-section mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+  return <section className="portal-section mx-auto max-w-7xl px-4 pb-20 pt-2 sm:px-6 lg:px-8">
     <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div><span className="section-kicker">بوابة Zazo</span><h2 className="mt-3 text-3xl font-black tracking-tight text-gray-900 sm:text-4xl">اختر المسار الذي يشبه فكرتك</h2></div>
       <div className="flex items-center gap-4"><p className="max-w-md text-sm leading-7 text-gray-500">استكشف مسارات Zazo واختَر الصفحة المناسبة لفكرتك.</p><div className="hidden gap-2 sm:flex"><button type="button" onClick={() => move(-340)} aria-label="الكروت السابقة" className="carousel-control"><ChevronRight className="h-5 w-5" /></button><button type="button" onClick={() => move(340)} aria-label="الكروت التالية" className="carousel-control"><ChevronLeft className="h-5 w-5" /></button></div></div>

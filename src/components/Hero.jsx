@@ -11,7 +11,7 @@ export function StatsBar() {
 }
 
 export default function Hero() {
-  return <section className="hero-mark overflow-hidden pb-8 pt-8">
+  return <section className="hero-mark overflow-hidden pb-0 pt-8">
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <div className="logo-frame relative overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-2xl shadow-gray-200/70">
         <div className="logo-glow" />
