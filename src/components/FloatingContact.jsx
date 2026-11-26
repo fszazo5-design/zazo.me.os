@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { MessageCircle, Phone, X, MessageSquareText } from 'lucide-react'
+import { Bot, MessageCircle, Phone, X, MessageSquareText } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const MESSENGER_URL = 'https://m.me/ahmd.alrwby.117154'
 const WHATSAPP_URL = 'https://wa.me/201091288031'
@@ -42,6 +43,20 @@ export default function FloatingContact() {
           </a>
         </div>
       )}
+
+      <Link
+        to="/zazobrain"
+        className="group flex items-center gap-3 rounded-2xl border border-violet-300/30 bg-gradient-to-l from-violet-600 to-blue-600 px-4 py-3 text-white shadow-2xl shadow-violet-600/30 transition-all hover:-translate-y-1 hover:shadow-violet-600/45 focus:outline-none focus:ring-2 focus:ring-violet-300"
+        aria-label="تحدث مع عقل زازو"
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+          <Bot className="h-5 w-5 transition-transform group-hover:scale-110" />
+        </span>
+        <span className="flex flex-col text-right">
+          <span className="text-sm font-black">تحدث مع عقل زازو</span>
+          <span className="text-[11px] text-white/75">اسأل، استكشف، وابدأ فكرتك</span>
+        </span>
+      </Link>
 
       {/* Toggle button */}
       <button
