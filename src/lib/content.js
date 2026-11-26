@@ -21,13 +21,13 @@ export async function loadAllContent() {
 }
 
 export const CHAT_API_URL = `${API_ROOT}/chat`
-export async function askZazo(question) {
+export async function askZazo(question, history = []) {
   const controller = new AbortController()
   const timeout = window.setTimeout(() => controller.abort(), 45000)
   let response
   let result = {}
   try {
-    response = await fetch(CHAT_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }), signal: controller.signal })
+    response = await fetch(CHAT_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, history: history.slice(-8).map(({ role, text }) => ({ role, text })) }), signal: controller.signal })
     result = await response.json().catch(() => ({}))
   } catch (error) {
     if (error?.name === 'AbortError') throw new Error('الرد اتأخر شوية. جرّب إرسال السؤال تاني.')

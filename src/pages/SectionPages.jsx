@@ -100,7 +100,7 @@ export function BrainPage() {
     setMessages((items) => [...items, { role: 'user', text: value }])
     setLoading(true)
     try {
-      const result = await askZazo(value)
+      const result = await askZazo(value, messages)
       setMessages((items) => [...items, { role: 'assistant', text: result.answer }])
     } catch (error) {
       setMessages((items) => [...items, { role: 'assistant', text: error.message || 'حصلت مشكلة مؤقتة. جرّب تاني بعد لحظات.' }])
