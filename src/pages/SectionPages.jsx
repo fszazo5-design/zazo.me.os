@@ -3,6 +3,7 @@ import { ArrowLeft, Bot, BriefcaseBusiness, ChevronLeft, ChevronRight, Code2, Do
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdSense from '../components/AdSense'
+import { AdsterraBanner } from '../components/Adsterra'
 import { askZazo, loadContent } from '../lib/content'
 
 const pageCopy = {
@@ -134,7 +135,7 @@ function ContentCards({ items, empty, kind }) {
 }
 
 function PageShell({ icon: Icon, eyebrow, title, description, gradient, children }) {
-  return <div className="dark-page min-h-[calc(100vh-4rem)] px-4 py-16 sm:px-6 lg:px-8"><div className="mx-auto max-w-5xl"><Link to="/" className="mb-10 inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition hover:text-gray-900"><ArrowLeft className="h-4 w-4" /> العودة للرئيسية</Link><div className="mb-12 max-w-3xl"><div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br ${gradient} text-white shadow-2xl`}><Icon className="h-8 w-8" /></div><span className="section-kicker">{eyebrow}</span><h1 className="mt-4 text-4xl font-black leading-tight text-gray-900 sm:text-6xl">{title}</h1><p className="mt-6 text-lg leading-8 text-gray-600">{description}</p></div>{children}</div></div>
+  return <div className="dark-page min-h-[calc(100vh-4rem)] px-4 py-16 sm:px-6 lg:px-8"><div className="mx-auto max-w-5xl"><Link to="/" className="mb-10 inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition hover:text-gray-900"><ArrowLeft className="h-4 w-4" /> العودة للرئيسية</Link><div className="mb-12 max-w-3xl"><div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br ${gradient} text-white shadow-2xl`}><Icon className="h-8 w-8" /></div><span className="section-kicker">{eyebrow}</span><h1 className="mt-4 text-4xl font-black leading-tight text-gray-900 sm:text-6xl">{title}</h1><p className="mt-6 text-lg leading-8 text-gray-600">{description}</p></div><AdsterraBanner placement={300} />{children}</div></div>
 }
 
 function InfoBox({ icon: Icon, title, text }) {

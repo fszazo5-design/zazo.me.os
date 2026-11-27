@@ -39,6 +39,21 @@
   .adsense-shell {
     @apply my-8 flex min-h-[90px] w-full items-center justify-center overflow-hidden rounded-2xl;
   }
+  .adsterra-shell {
+    @apply my-8 flex w-full items-center justify-center overflow-hidden;
+  }
+  .adsterra-300 {
+    min-height: 250px;
+  }
+  .adsterra-728 {
+    min-height: 90px;
+  }
+  .adsterra-320 {
+    min-height: 50px;
+  }
+  .adsterra-native {
+    min-height: 140px;
+  }
 }
 
 /* Custom scrollbar */
