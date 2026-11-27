@@ -36,6 +36,9 @@
   .badge {
     @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
   }
+  .adsense-shell {
+    @apply my-8 flex min-h-[90px] w-full items-center justify-center overflow-hidden rounded-2xl;
+  }
 }
 
 /* Custom scrollbar */
